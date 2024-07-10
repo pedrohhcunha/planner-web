@@ -1,4 +1,5 @@
 import { MapPin, Calendar, Settings2 } from "lucide-react";
+import { Button } from "../../componentes/button";
 
 export function Header() {
   return (
@@ -13,10 +14,10 @@ export function Header() {
           17 a 23 de Agosto
         </div>
         <div className="w-px h-6 bg-zinc-800" />
-        <button className="bg-zinc-800 text-zinc-200 rounded-lg px-5 py-2 font-medium flex items-center gap-2 hover:bg-zinc-700">
+        <Button variant="secondary">
           Alterar local/data
           <Settings2 size={20} />
-        </button>
+        </Button>
       </div>
     </div>
   );

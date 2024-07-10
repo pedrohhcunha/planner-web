@@ -1,5 +1,5 @@
 import { Guess } from "./guess";
-import { ImportantLinks } from "./importante-links";
+import { ImportantLinks } from "./important-links";
 import { Activities } from "./activities";
 import { Header } from "./header";
 
