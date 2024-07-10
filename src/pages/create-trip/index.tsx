@@ -1,6 +1,9 @@
-import { MapPin, Calendar, ArrowRight, UserRoundPlus, Settings2, X, AtSign, Plus, User } from "lucide-react"
 import { useState, type FormEvent } from "react"
 import { useNavigate } from "react-router-dom"
+import { InviteGuestsModal } from "./invite-guests-modal";
+import { ConfirmTripModal } from "./confirm-trip-modal";
+import { DestinationAndDateStep } from "./steps/destination-and-date-step";
+import { InviteGuestsStep } from "./steps/invite-guests-step";
 
 export function CreateTripPage() {
   const navigate = useNavigate();
@@ -11,33 +14,18 @@ export function CreateTripPage() {
 
   const [emailsToInvite, setEmailsToInvite] = useState<string[]>([]);
 
+  const openGuestsInput = () => setIsGuestsInputOpen(true);
+  const closeGuestsInput = () => setIsGuestsInputOpen(false);
+
+  const openGuestsModal = () => setIsGuestsModalOpen(true);
+  const closeGuestssModal = () => setIsGuestsModalOpen(false);
+
+  const openConfirmTripModal = () => setIsConfirmTripModalOpen(true);
+  const closeConfirmTripModal = () => setIsConfirmTripModalOpen(false);
+
   const removeEmailToInvite = (email: string) => {
     setEmailsToInvite(emailsToInvite.filter((e) => e !== email));
   };
-
-  const openGuestsInput = () => {
-    setIsGuestsInputOpen(true);
-  };
-
-  const closeGuestsInput = () => {
-    setIsGuestsInputOpen(false);
-  };
-
-  const openGuestsModal = () => {
-    setIsGuestsModalOpen(true);
-  };
-
-  const closeGuestssModal = () => {
-    setIsGuestsModalOpen(false);
-  };
-
-  const openConfirmTripModal = () => {
-    setIsConfirmTripModalOpen(true);
-  }
-
-  const closeConfirmTripModal = () => {
-    setIsConfirmTripModalOpen(false);
-  }
 
   const addEmailToInvite = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -82,42 +70,17 @@ export function CreateTripPage() {
           </p>
         </div>
         <div className="space-y-4">
-          <div className="h-16 bg-zinc-900 px-4 rounded-xl flex items-center shadow-shape gap-3">
-            <div className="flex flex-1 items-center gap-2">
-              <MapPin size={20} className="text-zinc-400" />
-              <input disabled={isGuestsInputOpen} type="text" placeholder="Para onde você vai?" className="bg-transparent text-lg placeholder-zinc-400 outline-none flex-1" />
-            </div>
-            <div className="flex items-center gap-2">
-              <Calendar size={20} className="text-zinc-400" />
-              <input disabled={isGuestsInputOpen} type="text" placeholder="Quando?" className="bg-transparent text-lg placeholder-zinc-400 outline-none w-40" />
-            </div>
-            <div className="w-px h-6 bg-zinc-800" />
-            {isGuestsInputOpen ? (
-              <button onClick={closeGuestsInput} className="bg-zinc-800 text-zinc-200 rounded-lg px-5 py-2 font-medium flex items-center gap-2 hover:bg-zinc-700">
-                Alterar local/data
-                <Settings2 size={20} />
-              </button>
-            ) : (
-              <button onClick={openGuestsInput} className="bg-lime-300 text-lime-950 rounded-lg px-5 py-2 font-medium flex items-center gap-2 hover:bg-lime-400">
-                Adicionar amigos
-                <ArrowRight size={20} />
-              </button>
-            )}
-          </div>
+          <DestinationAndDateStep
+            isGuestsInputOpen={isGuestsInputOpen}
+            openGuestsInput={openGuestsInput}
+            closeGuestsInput={closeGuestsInput}
+          />
           {isGuestsInputOpen && (
-            <div className="h-16 bg-zinc-900 px-4 rounded-xl flex items-center shadow-shape gap-3">
-              <button onClick={openGuestsModal} type="button" className="flex flex-1 items-center gap-2">
-                <UserRoundPlus size={20} className="text-zinc-400" />
-                <span className="text-lg text-zinc-400">
-                  {emailsToInvite.length > 0 ? 'Quem estará na viagem?' : `${emailsToInvite.length} pessoa(s) convidada(s)`}
-                </span>
-              </button>
-              <div className="w-px h-6 bg-zinc-800" />
-              <button onClick={openConfirmTripModal} className="bg-lime-300 text-lime-950 rounded-lg px-5 py-2 font-medium flex items-center gap-2 hover:bg-lime-400">
-                Confirmar viagem
-                <ArrowRight size={20} />
-              </button>
-            </div>
+            <InviteGuestsStep
+              openGuestsModal={openGuestsModal}
+              openConfirmTripModal={openConfirmTripModal}
+              emailsToInvite={emailsToInvite}
+            />
           )}
         </div>
         <p className="text-sm text-zinc-500">
@@ -127,91 +90,18 @@ export function CreateTripPage() {
       </div>
 
       {isGuestsModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center">
-          <div className="w-[640px] rounded-xl py-5 px-6 shadow-shape bg-zinc-900 flex flex-col gap-5">
-            <div className="flex flex-col gap-2">
-              <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold">Selecionar convidados</h2>
-                <button onClick={closeGuestssModal} className="text-zinc-400 hover:text-zinc-300">
-                  <X size={24} />
-                </button>
-              </div>
-              <p className="text-zinc-500 text-sm">
-                Os convidados irão receber e-mails para confirmar a participação na viagem.
-              </p>
-            </div>
-            {emailsToInvite.length > 0 && (
-              <>
-                <div className="flex flex-wrap gap-2">
-                  {emailsToInvite.map((email) => (
-                    <div key={email} className="py-1.5 px-2.5 rounded-md bg-zinc-800 flex items-center gap-2">
-                      <span className="text-zinc-300">{email}</span>
-                      <button onClick={() => removeEmailToInvite(email)} className="text-zinc-400 hover:text-zinc-300">
-                        <X size={16} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-                <div className="w-full h-px bg-zinc-800" />
-              </>
-            )}
-            <form onSubmit={addEmailToInvite} className="p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg flex items-center gap-2">
-              <div className="px-2 flex items-center flex-1 gap-2">
-                <AtSign size={20} className="text-zinc-400" />
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Digite o email do convidado"
-                  className="bg-transparent text-lg placeholder-zinc-400 outline-none flex-1"
-                />
-              </div>
-              <button type="submit" className="bg-lime-300 text-lime-950 rounded-lg px-5 py-2 font-medium hover:bg-lime-400 flex items-center gap-2">
-                Convidar
-                <Plus size={20} />
-              </button>
-            </form>
-          </div>
-        </div>
+        <InviteGuestsModal
+          emailsToInvite={emailsToInvite}
+          removeEmailToInvite={removeEmailToInvite}
+          addEmailToInvite={addEmailToInvite}
+          closeGuestssModal={closeGuestssModal}
+        />
       )}
       {isConfirmTripModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center">
-          <div className="w-[640px] rounded-xl py-5 px-6 shadow-shape bg-zinc-900 flex flex-col gap-5">
-            <div className="flex flex-col gap-2">
-              <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold">Confirmar criação de viagem</h2>
-                <button onClick={closeConfirmTripModal} className="text-zinc-400 hover:text-zinc-300">
-                  <X size={24} />
-                </button>
-              </div>
-              <p className="text-zinc-500 text-sm">
-                Para concluir a criação da viagem para <span className="text-zinc-100 font-semibold">Florianópolis, Brasil</span> nas datas de <span className="text-zinc-100 font-semibold">16 a 27 de Agosto de 2024</span> preencha seus dados abaixo:
-              </p>
-            </div>
-            <form onSubmit={confirmTrip} className="flex flex-col gap-3">
-              <div className="h-14 px-4 bg-zinc-950 border border-zinc-800 rounded-lg flex items-center gap-2">
-                <User size={20} className="text-zinc-400" />
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Seu nome completo"
-                  className="bg-transparent text-lg placeholder-zinc-400 outline-none flex-1"
-                />
-              </div>
-              <div className="h-14 px-4 bg-zinc-950 border border-zinc-800 rounded-lg flex items-center gap-2">
-                <AtSign size={20} className="text-zinc-400" />
-                <input
-                  type="text"
-                  name="email"
-                  placeholder="Seu email pessoal"
-                  className="bg-transparent text-lg placeholder-zinc-400 outline-none flex-1"
-                />
-              </div>
-              <button type="submit" className="w-full h-11 justify-center bg-lime-300 text-lime-950 rounded-lg px-5 font-medium hover:bg-lime-400 flex items-center gap-2">
-                Confirmar criação da viagem
-              </button>
-            </form>
-          </div>
-        </div>
+        <ConfirmTripModal
+          closeConfirmTripModal={closeConfirmTripModal}
+          confirmTrip={confirmTrip}
+        />
       )}
     </div>
   )
